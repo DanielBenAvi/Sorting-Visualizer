@@ -33,11 +33,12 @@ pygame.display.set_caption("Visual Sorting Algorithm")
     Variables
 '''
 button_lst = []
-sort_flag = False
 limit = 20
-randomlist = random.sample(range(1, limit+1), limit)
+random_list = random.sample(range(1, limit+1), limit)
 COLUMN_WIDTH = WINDOW_WIDTH//limit
- 
+running = True
+sort_flag = False
+switch = 'bubble'
 
 
 '''
@@ -51,7 +52,7 @@ def is_sorted(lst) -> bool:
    
 def drawing_graph(x1, x2) -> None:
     DISPLAY.fill(BLACK)
-    for index,num in enumerate(randomlist):
+    for index,num in enumerate(random_list):
         rect_hight = num*(WINDOW_HIGHT-120)//limit
         addRect(index,x1,x2,rect_hight,num)
     pygame.display.update()
@@ -65,34 +66,44 @@ def addRect(index, x1 ,x2,rect_hight,text) -> None:
 
 def Finish() -> None:
     DISPLAY.fill(BLACK)
-    for index,num in enumerate(randomlist):
+    for index,num in enumerate(random_list):
         rect_hight = num*(WINDOW_HIGHT-120)//limit
         color = GREEN
         pygame.draw.rect(DISPLAY, color, (index*COLUMN_WIDTH, WINDOW_HIGHT-rect_hight, COLUMN_WIDTH, rect_hight))
         DISPLAY.blit(ARIEL.render(f'{num}', True, BLACK), (index*COLUMN_WIDTH + COLUMN_WIDTH//2 - 5 , WINDOW_HIGHT-20))
     pygame.display.update()
     clock.tick(FPS)
-switch = 'bubble'
 
-running = True
+
+def bubble_sort(random_list):
+    for i in range(len(random_list)):
+        for j in range(len(random_list)-i-1):
+            if random_list[j] > random_list[j+1]:
+                drawing_graph(j, j+1)
+                random_list[j], random_list[j+1] = random_list[j+1], random_list[j]         
+                drawing_graph(j, j+1)
+            if is_sorted(random_list):
+                sort_flag = False
+                Finish()
+                break
+
+
+
+'''
+    Loop
+'''
 while running:
     DISPLAY.fill(BLACK)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         
-    is_sorted(randomlist)
+    is_sorted(random_list)
     if not sort_flag:
-        for i in range(len(randomlist)):
-            for j in range(len(randomlist)-i-1):
-                if randomlist[j] > randomlist[j+1]:
-                    drawing_graph(j, j+1)
-                    randomlist[j], randomlist[j+1] = randomlist[j+1], randomlist[j]         
-                    drawing_graph(j, j+1)
-                if is_sorted(randomlist):
-                    sort_flag = False
-                    Finish()
-                    break
+        if switch == 'bubble':
+            bubble_sort(random_list)
+        elif switch == 'quick':
+            pass
     
 
 
