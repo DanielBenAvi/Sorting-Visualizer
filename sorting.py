@@ -1,5 +1,6 @@
 import pygame
 import random
+from Button import Button
 '''
     Pygame
 '''
@@ -32,7 +33,6 @@ pygame.display.set_caption("Visual Sorting Algorithm")
 '''
     Variables
 '''
-button_lst = []
 limit = 20
 random_list = random.sample(range(1, limit+1), limit)
 COLUMN_WIDTH = WINDOW_WIDTH//limit
@@ -52,11 +52,12 @@ def is_sorted(lst) -> bool:
    
 def drawing_graph(x1, x2) -> None:
     DISPLAY.fill(BLACK)
+    draw_all_buttons()
     for index,num in enumerate(random_list):
         rect_hight = num*(WINDOW_HIGHT-120)//limit
         addRect(index,x1,x2,rect_hight,num)
-    pygame.display.update()
-    clock.tick(FPS)
+    update()
+
     
 
 def addRect(index, x1 ,x2,rect_hight,text) -> None:
@@ -64,15 +65,13 @@ def addRect(index, x1 ,x2,rect_hight,text) -> None:
     pygame.draw.rect(DISPLAY, color, (index*COLUMN_WIDTH, WINDOW_HIGHT-rect_hight, COLUMN_WIDTH, rect_hight))
     DISPLAY.blit(ARIEL.render(f'{text}', True, BLACK), (index*COLUMN_WIDTH + COLUMN_WIDTH//2 - 5 , WINDOW_HIGHT-20))
 
-def Finish() -> None:
-    DISPLAY.fill(BLACK)
+def finish() -> None:
     for index,num in enumerate(random_list):
         rect_hight = num*(WINDOW_HIGHT-120)//limit
         color = GREEN
         pygame.draw.rect(DISPLAY, color, (index*COLUMN_WIDTH, WINDOW_HIGHT-rect_hight, COLUMN_WIDTH, rect_hight))
         DISPLAY.blit(ARIEL.render(f'{num}', True, BLACK), (index*COLUMN_WIDTH + COLUMN_WIDTH//2 - 5 , WINDOW_HIGHT-20))
-    pygame.display.update()
-    clock.tick(FPS)
+    update()
 
 
 def bubble_sort(random_list):
@@ -84,21 +83,51 @@ def bubble_sort(random_list):
                 drawing_graph(j, j+1)
             if is_sorted(random_list):
                 sort_flag = False
-                Finish()
+                finish()
                 break
 
+def draw_all_buttons():
+    bubble_button.draw(DISPLAY)
 
+def update():
+    for event in pygame.event.get():
+        pos = pygame.mouse.get_pos()
+        if event.type == pygame.QUIT:
+            running = False  
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if bubble_button.isOver(pos):
+                random_list = random.sample(range(1, limit+1), limit)
+                sort_flag = False
 
+                
+        if event.type == pygame.MOUSEMOTION:
+            if bubble_button.isOver(pos):
+                bubble_button.color = BLUE
+            else:
+                bubble_button.color = PINK
+        
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                run = False
+    draw_all_buttons()
+    pygame.display.update()
+    clock.tick(FPS)
+
+def reset():
+    pass
 '''
     Loop
 '''
+bubble_button = Button(GREEN,0,0,200,100,'Bubble Sort')
 while running:
-    DISPLAY.fill(BLACK)
+    is_sorted(random_list)
     for event in pygame.event.get():
+        pos = pygame.mouse.get_pos()
         if event.type == pygame.QUIT:
             running = False
-        
-    is_sorted(random_list)
+    
     if not sort_flag:
         if switch == 'bubble':
             bubble_sort(random_list)
