@@ -1,54 +1,71 @@
 import pygame
 import random
 pygame.init()
+clock = pygame.time.Clock()
 
+'''
+    Colors
+'''
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 PINK = (255,51,153)
 BLUE = (0,102,204)
 GREEN = (0,204,0)
-font = pygame.font.SysFont('Ariel', 25)
-FPS = 15
-clock = pygame.time.Clock()
 
+'''
+    font
+'''
+ARIEL = pygame.font.SysFont('Ariel', 25)
+
+'''
+    Screen Setting
+'''
+FPS = 15 
 WINDOW_WIDTH = 1280
 WINDOW_HIGHT = 720
-display_surface = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HIGHT))
+DISPLAY = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HIGHT))
 pygame.display.set_caption("Visual Sorting Algorithm")
 
-
+'''
+    Variables
+'''
+button_lst = []
 sort_flag = False
-
 randomlist = random.sample(range(1, 21), 20)
+COLUMN_WIDTH = 1280//20
+ 
 
 
+'''
+    Functions
+'''
 def is_sorted(lst) -> bool:
     for i in range(len(lst)-1):
         if (lst[i]>lst[i+1]):
             return False
     return True
    
-def drawing_graph(rect_width, x1, x2):
-    display_surface.fill(BLACK)
+def drawing_graph(x1, x2) -> None:
+    DISPLAY.fill(BLACK)
     for index,num in enumerate(randomlist):
         rect_hight = num*30
-        addRect(index,x1,x2,rect_width,rect_hight,num)
+        addRect(index,x1,x2,rect_hight,num)
     pygame.display.update()
     clock.tick(FPS)
     
 
-def addRect(index, x1 ,x2,rect_width,rect_hight,text):
+def addRect(index, x1 ,x2,rect_hight,text) -> None:
     color = BLUE if index == x1 else PINK if index == x2 else WHITE
-    pygame.draw.rect(display_surface, color, (index*rect_width, WINDOW_HIGHT-rect_hight, rect_width, rect_hight))
-    display_surface.blit(font.render(f'{text}', True, BLACK), (index*rect_width + rect_width//2 - 5 , WINDOW_HIGHT-25))
+    pygame.draw.rect(DISPLAY, color, (index*COLUMN_WIDTH, WINDOW_HIGHT-rect_hight, COLUMN_WIDTH, rect_hight))
+    DISPLAY.blit(ARIEL.render(f'{text}', True, BLACK), (index*COLUMN_WIDTH + COLUMN_WIDTH//2 - 5 , WINDOW_HIGHT-25))
 
-def Finish():
-    display_surface.fill(BLACK)
+def Finish() -> None:
+    DISPLAY.fill(BLACK)
     for index,num in enumerate(randomlist):
         rect_hight = num*30
         color = GREEN
-        pygame.draw.rect(display_surface, color, (index*rect_width, WINDOW_HIGHT-rect_hight, rect_width, rect_hight))
-        display_surface.blit(font.render(f'{num}', True, BLACK), (index*rect_width + rect_width//2 - 5 , WINDOW_HIGHT-25))
+        pygame.draw.rect(DISPLAY, color, (index*COLUMN_WIDTH, WINDOW_HIGHT-rect_hight, COLUMN_WIDTH, rect_hight))
+        DISPLAY.blit(ARIEL.render(f'{num}', True, BLACK), (index*COLUMN_WIDTH + COLUMN_WIDTH//2 - 5 , WINDOW_HIGHT-25))
     pygame.display.update()
     clock.tick(FPS)
 
@@ -61,16 +78,16 @@ while running:
         
     is_sorted(randomlist)
     if not sort_flag:
-        display_surface.fill(BLACK)
-        rect_width = 1280//20
+        DISPLAY.fill(BLACK)
         for i in range(len(randomlist)):
             for j in range(len(randomlist)-i-1):
                 if randomlist[j] > randomlist[j+1]:
-                    drawing_graph(rect_width, j, j+1)
+                    drawing_graph(j, j+1)
                     randomlist[j], randomlist[j+1] = randomlist[j+1], randomlist[j]         
-                    drawing_graph(rect_width, j, j+1)
+                    drawing_graph(j, j+1)
                     
                 if is_sorted(randomlist):
+                    sort_flag = False
                     Finish()
                     break
     
