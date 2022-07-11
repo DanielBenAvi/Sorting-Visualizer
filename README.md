@@ -3,5 +3,5 @@
 Visual sorting algorithms:
 
 Available:
-1. 
+1. Bubble Sort
 2. 
